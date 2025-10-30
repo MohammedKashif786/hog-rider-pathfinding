@@ -262,6 +262,17 @@ const BFS_VISUALIZER = () => {
         />
       </div>
 
+      <div
+        className="absolute inset-0 opacity-25"
+        style={{
+          backgroundImage:
+            "url('https://hebbkx1anhila5yf.public.blob.vercel-storage.com/hog%20rider%20running-Enw9MlPRfqS6UIpBJWez1hrjnTXUgc.gif')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
+      />
+
       <DustParticles />
       <CloudSilhouettes />
 
