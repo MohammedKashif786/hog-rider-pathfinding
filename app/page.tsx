@@ -220,6 +220,39 @@ const BFS_VISUALIZER = () => {
     )
   }
 
+  const RippleEffect = ({ row, col }: { row: number; col: number }) => {
+    return (
+      <motion.div
+        className="absolute inset-0 rounded-sm border-2 border-yellow-300"
+        initial={{ scale: 0.8, opacity: 1 }}
+        animate={{ scale: 1.5, opacity: 0 }}
+        transition={{ duration: 0.6 }}
+        style={{
+          pointerEvents: "none",
+        }}
+      />
+    )
+  }
+
+  const ObstacleAnimation = () => {
+    return (
+      <motion.div
+        className="absolute inset-0 rounded-sm"
+        animate={{
+          boxShadow: [
+            "inset 0 0 0px rgba(255, 0, 0, 0)",
+            "inset 0 0 8px rgba(255, 0, 0, 0.6)",
+            "inset 0 0 0px rgba(255, 0, 0, 0)",
+          ],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Number.POSITIVE_INFINITY,
+        }}
+      />
+    )
+  }
+
   const CloudSilhouettes = () => {
     return (
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
@@ -357,60 +390,83 @@ const BFS_VISUALIZER = () => {
           </motion.div>
         )}
 
-        {/* Grid Container */}
+        {/* Grid Container with Arena Border */}
         <motion.div
           animate={{ y: [0, -8, 0] }}
           transition={{ duration: 3, repeat: Number.POSITIVE_INFINITY }}
           className="mb-8"
         >
-          <div className="bg-slate-900/80 backdrop-blur-sm p-6 rounded-lg border-2 border-purple-500 shadow-2xl">
-            <div
-              className="grid gap-1 bg-slate-950 p-4 rounded"
-              style={{
-                gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,
-              }}
-            >
-              {grid.map((row, r) =>
-                row.map((cell, c) => {
-                  const isPath = path.some((p) => p.row === r && p.col === c)
-                  const isVisited = visited.has(`${r},${c}`)
-                  const isCurrentPos = currentCharPos.row === r && currentCharPos.col === c
+          <div className="relative">
+            {/* Decorative border elements */}
+            <div className="absolute -inset-8 border-4 border-yellow-600 rounded-lg opacity-40 pointer-events-none" />
+            <div className="absolute -inset-6 border-2 border-orange-500 rounded-lg opacity-30 pointer-events-none" />
 
-                  let bgColor = "bg-slate-700"
-                  if (cell === "obstacle") bgColor = "bg-gray-600"
-                  if (cell === "start") bgColor = "bg-lime-500"
-                  if (cell === "goal") bgColor = "bg-orange-500"
-                  if (isPath) bgColor = "bg-cyan-400"
-                  if (isVisited && !isPath) bgColor = "bg-yellow-400"
+            <div className="bg-slate-900/80 backdrop-blur-sm p-6 rounded-lg border-2 border-purple-500 shadow-2xl">
+              <div
+                className="grid gap-1 bg-slate-950 p-4 rounded"
+                style={{
+                  gridTemplateColumns: `repeat(${COLS}, minmax(0, 1fr))`,
+                }}
+              >
+                {grid.map((row, r) =>
+                  row.map((cell, c) => {
+                    const isPath = path.some((p) => p.row === r && p.col === c)
+                    const isVisited = visited.has(`${r},${c}`)
+                    const isCurrentPos = currentCharPos.row === r && currentCharPos.col === c
 
-                  return (
-                    <motion.div
-                      key={`${r}-${c}`}
-                      className={`w-8 h-8 rounded-sm ${bgColor} flex items-center justify-center relative transition-all duration-200`}
-                      animate={{
-                        scale: isCurrentPos ? 1.1 : 1,
-                      }}
-                    >
-                      {isCurrentPos && (
-                        <motion.img
-                          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Hog-Rider-PNG-File-At7tPCkunPLo4jDC0w0QqkV33VnXp1.png"
-                          alt="Hog Rider"
-                          className="w-10 h-10 object-contain drop-shadow-lg"
-                          animate={{
-                            y: [0, -3, 0],
-                            rotate: [0, 5, -5, 0],
-                            scale: [1, 1.1, 1],
-                          }}
-                          transition={{
-                            duration: 0.6,
+                    let bgColor = "bg-slate-700"
+                    if (cell === "obstacle") bgColor = "bg-gray-600"
+                    if (cell === "start") bgColor = "bg-lime-500"
+                    if (cell === "goal") bgColor = "bg-orange-500"
+                    if (isPath) bgColor = "bg-cyan-400"
+                    if (isVisited && !isPath) bgColor = "bg-yellow-400"
+
+                    return (
+                      <motion.div
+                        key={`${r}-${c}`}
+                        className={`w-8 h-8 rounded-sm ${bgColor} flex items-center justify-center relative transition-all duration-200 shadow-md`}
+                        animate={{
+                          scale: isCurrentPos ? 1.1 : 1,
+                          boxShadow: isPath
+                            ? [
+                                "0 0 8px rgba(34, 211, 238, 0.5)",
+                                "0 0 16px rgba(34, 211, 238, 0.8)",
+                                "0 0 8px rgba(34, 211, 238, 0.5)",
+                              ]
+                            : "0 2px 4px rgba(0, 0, 0, 0.3)",
+                        }}
+                        transition={{
+                          boxShadow: {
+                            duration: 1.5,
                             repeat: Number.POSITIVE_INFINITY,
-                          }}
-                        />
-                      )}
-                    </motion.div>
-                  )
-                }),
-              )}
+                          },
+                        }}
+                      >
+                        {isVisited && !isPath && !isCurrentPos && <RippleEffect row={r} col={c} />}
+
+                        {cell === "obstacle" && <ObstacleAnimation />}
+
+                        {isCurrentPos && (
+                          <motion.img
+                            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Hog-Rider-PNG-File-At7tPCkunPLo4jDC0w0QqkV33VnXp1.png"
+                            alt="Hog Rider"
+                            className="w-10 h-10 object-contain drop-shadow-lg"
+                            animate={{
+                              y: [0, -3, 0],
+                              rotate: [0, 5, -5, 0],
+                              scale: [1, 1.1, 1],
+                            }}
+                            transition={{
+                              duration: 0.6,
+                              repeat: Number.POSITIVE_INFINITY,
+                            }}
+                          />
+                        )}
+                      </motion.div>
+                    )
+                  }),
+                )}
+              </div>
             </div>
           </div>
         </motion.div>
@@ -432,13 +488,23 @@ const BFS_VISUALIZER = () => {
           </button>
         </div>
 
-        {/* Stats */}
-        <div className="text-center text-gray-300">
-          <p className="text-lg font-semibold">
-            Step: {currentStep} / {path.length}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center text-gray-300 bg-slate-900/60 backdrop-blur-sm p-4 rounded-lg border border-purple-500"
+        >
+          <p className="text-2xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-2">
+            ⚔️ Steps to Victory: {path.length > 0 ? path.length - 1 : "—"}
           </p>
-          <p className="text-sm">Visited: {visited.size} cells</p>
-        </div>
+          <div className="flex gap-6 justify-center text-sm">
+            <div>
+              <span className="text-yellow-400 font-semibold">Current Step:</span> {currentStep} / {path.length}
+            </div>
+            <div>
+              <span className="text-cyan-400 font-semibold">Explored:</span> {visited.size} cells
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   )
