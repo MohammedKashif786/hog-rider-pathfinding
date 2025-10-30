@@ -281,7 +281,7 @@ const BFS_VISUALIZER = () => {
 
   return (
     <div className="relative w-full min-h-screen overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-green-950 via-purple-900 to-green-900">
+      <div className="absolute inset-0 bg-gradient-to-br from-green-950 via-purple-900 to-green-950">
         <motion.div
           className="absolute inset-0"
           animate={{
@@ -397,10 +397,6 @@ const BFS_VISUALIZER = () => {
           className="mb-8"
         >
           <div className="relative">
-            {/* Decorative border elements */}
-            <div className="absolute -inset-8 border-4 border-yellow-600 rounded-lg opacity-40 pointer-events-none" />
-            <div className="absolute -inset-6 border-2 border-orange-500 rounded-lg opacity-30 pointer-events-none" />
-
             <div className="bg-slate-900/80 backdrop-blur-sm p-6 rounded-lg border-2 border-purple-500 shadow-2xl">
               <div
                 className="grid gap-1 bg-slate-950 p-4 rounded"
